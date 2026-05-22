@@ -1,92 +1,48 @@
-# 🎮 Wordle By FULLYERIK – Schnellstart
+# Wordle By FULLYERIK
 
-So bringst du das Projekt nach dem Entpacken zum Laufen.
+A desktop Wordle game built in C# with Windows Forms, backed by an online database for a shared leaderboard and custom word management.
 
----
+## About
 
-## 📂 Was ist im ZIP?
+This is my take on the classic word-guessing game, rewritten from scratch as a native Windows application. Instead of keeping everything local, the game connects to a cloud database so scores and the word list are shared across anyone who plays. I built it to get more comfortable with C#, asynchronous networking, and designing a custom UI from the ground up.
 
-```
-WordleByFullyerik/                      ← dieser Ordner
-├── WordleByFullyerik.sln               ← Solution-Datei (hiermit öffnen!)
-├── supabase_setup.sql                  ← SQL für die Online-Datenbank
-├── START_HIER.md                       ← diese Anleitung
-└── WordleByFullyerik/                  ← der eigentliche Projekt-Ordner
-    ├── WordleByFullyerik.csproj
-    ├── Program.cs
-    ├── BaseAppForm.cs
-    ├── MainMenuForm.cs
-    ├── GameForm.cs
-    ├── PlayerNameForm.cs
-    ├── LeaderboardForm.cs
-    ├── WordManagementForm.cs
-    ├── HelpForm.cs
-    ├── RoundedButton.cs
-    ├── ThemeManager.cs
-    └── SupabaseService.cs
-```
+The whole interface is custom-drawn — no default Windows window chrome. That includes the title bar, rounded buttons, an on-screen keyboard, and a full light/dark theme that can be switched on the fly.
 
----
+## Features
 
-## 🚀 Schritt 1: Entpacken
+- **Classic Wordle gameplay** — guess a five-letter word in six tries, with the familiar green / yellow / grey colour feedback
+- **Online leaderboard** — every result is saved to a cloud database; players are ranked by points, with wins, losses, games played and average attempts tracked per name
+- **Custom word management** — add or remove words from the shared list directly inside the app, with input validation
+- **Light & dark mode** — toggle the theme from any screen, applied instantly everywhere
+- **Custom app shell** — hand-built title bar with back, minimise, theme and close controls; the window is fully draggable
+- **Dual input** — type with your physical keyboard or click the built-in on-screen keyboard; both stay colour-synced with your guesses
+- **Scoring system** — fewer guesses means more points (6 points for a first-try win down to 1 point for a sixth-try win, 0 for a loss)
 
-Entpacke das ZIP irgendwohin, z.B. nach `C:\Daten\IMS-1a\`.
-**Wichtig:** Den kompletten Ordner entpacken, nicht nur einzelne Dateien rausziehen.
+## Tech Stack
 
-## 🚀 Schritt 2: In Rider öffnen
+- **C# / .NET 8** with **Windows Forms** for the UI
+- **Supabase** (PostgreSQL) as the backend, accessed through its REST API
+- Pure `HttpClient` + `System.Text.Json` for networking — no heavy third-party dependencies
 
-1. Rider öffnen
-2. **"Open"** klicken
-3. Die Datei **`WordleByFullyerik.sln`** auswählen (NICHT den Ordner!)
-4. **"Trust Project"** klicken falls gefragt
-5. Kurz warten bis Rider fertig geladen hat (unten rechts läuft die Anzeige)
+## How It Works
 
-> 💡 In Visual Studio 2022 geht es genauso: Doppelklick auf `WordleByFullyerik.sln`.
+The game talks to the database over a small service layer that wraps the REST endpoints for reading the word list, picking a random secret word, and updating player statistics after each round. Player stats accumulate across sessions, so playing again under the same name adds to your totals rather than replacing them.
 
-## 🚀 Schritt 3: Supabase-Zugangsdaten eintragen
+The colouring logic handles repeated letters correctly — a guessed letter only lights up as many times as it actually appears in the answer, which is the part of Wordle most clones get wrong.
 
-Öffne die Datei **`SupabaseService.cs`** und trage ganz oben deine Daten ein:
+## Screenshots
 
-```csharp
-private const string SupabaseUrl = "DEIN-PROJEKT.supabase.co";   // OHNE https://
-private const string SupabaseKey = "DEIN-ANON-KEY";              // anon public key
-```
+*(Add a few screenshots of the menu, a game in progress, and the leaderboard here.)*
 
-Wo du die findest: Supabase → Settings ⚙ → API → "Project URL" und "anon public".
+## Roadmap
 
-## 🚀 Schritt 4: Datenbank einrichten (nur beim ersten Mal)
+Some ideas I might add later:
 
-Falls deine Supabase-Tabellen noch leer / nicht vorhanden sind:
+- Flip animations when revealing letter colours
+- Sound effects for typing and winning
+- A daily-word mode where everyone gets the same puzzle
+- A per-player statistics screen
 
-1. Supabase → **SQL Editor** → **New query**
-2. Inhalt von **`supabase_setup.sql`** reinkopieren
-3. **Run** klicken
+## Author
 
-Das erstellt die Tabellen, lädt 76 Wörter und schaltet die Sicherheitssperre (RLS) ab.
-
-## 🚀 Schritt 5: Starten!
-
-In Rider oben rechts auf den **grünen Play-Button ▶️** klicken (oder `Shift + F10`).
-
-🎉 Fertig – das Hauptmenü öffnet sich!
-
----
-
-## 🆘 Falls etwas nicht geht
-
-**"Wort konnte nicht hinzugefügt werden – 401 Unauthorized"**
-→ Die Sicherheitssperre (RLS) ist noch aktiv. Im Supabase SQL Editor ausführen:
-```sql
-ALTER TABLE words DISABLE ROW LEVEL SECURITY;
-ALTER TABLE leaderboard DISABLE ROW LEVEL SECURITY;
-```
-
-**"Keine Verbindung zur Datenbank"**
-→ Hast du in `SupabaseService.cs` die zwei Zeilen mit deinen echten Daten ersetzt?
-→ Internetverbindung da?
-
-**Build-Fehler mit "AssemblyInfo doppelt"**
-→ Lösch die Ordner `bin` und `obj` im Projektordner und starte neu.
-
-**Rider zeigt "Sonstige Dateien" / "Add Configuration"**
-→ Du hast den Ordner statt der `.sln` geöffnet. Schließen und nochmal die `.sln` öffnen.
+Built by **FULLYERIK**.
